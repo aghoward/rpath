@@ -9,11 +9,11 @@
 template <typename TSuccess, typename TFailure>
 class Result
 {
-    using TValue = std::optional<std::variant<TSuccess, TFailure>>;
+    using TValue = std::variant<TSuccess, TFailure>;
     TValue m_value;
 
     public:
-        template <typename T, typename = std::enable_if_t<std::is_constructible_v<typename decltype(m_value)::value_type, T>, void>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible_v<decltype(m_value), T>, void>>
         Result(T&& value)
             : m_value(std::move(value)) {}
 
@@ -29,7 +29,7 @@ class Result
                     else
                         return failureAction(std::forward<decltype(value)>(value));
                 },
-                std::move(m_value.value()));
+                std::move(m_value));
         }
 };
 

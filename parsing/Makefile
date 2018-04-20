@@ -1,11 +1,11 @@
 GCC=g++
 AR=ar
-FLAGS=--std=c++17 -I../ -L../files/lib
+FLAGS=--std=c++17 -I../ -I../cdif -L../files/lib
 AR_FLAGS=rcs
 
 objdir=./obj
 libdir=./lib
-objects=${objdir}/elfheaderparser.o ${objdir}/programheaderfactory.o ${objdir}/sectionheaderfactory.o #${objdir}/factoriesmodule.o
+objects=${objdir}/elfheaderfactory.o ${objdir}/programheaderfactory.o ${objdir}/sectionheaderfactory.o ${objdir}/elfparser.o ${objdir}/factoriesmodule.o
 libs=${libdir}/libfactories.a
 
 all: ${objdir} ${objects} ${libdir} ${libs}

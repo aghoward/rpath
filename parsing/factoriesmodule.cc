@@ -1,29 +1,30 @@
+#include "parsing/factoriesmodule.h"
+
+#include "cdif/cdif.h"
+#include "parsing/elfheaderfactory.h"
+#include "parsing/elfparser.h"
+#include "parsing/programheaderfactory.h"
+#include "parsing/sectionheaderfactory.h"
+#include "files/filereader.h"
+
 #include <functional>
 #include <memory>
 
-#include "cdif/cdif.h"
-#include "factories/elfheaderfactory.h"
-#include "factories/factoriesmodule.h"
-#include "factories/programheaderfactory.h"
-#include "factories/sectionheaderfactory.h"
-#include "files/filereader.h"
+void FactoriesModule::load(cdif::Container& ctx)
+{
+    ctx.bind<FileReader, const std::string&>().build();
+    ctx.bind<std::shared_ptr<FileReader>, const std::string&>(
+            [] (const auto& fn) { return std::make_shared<FileReader>(fn); })
+        .build();
 
-void FactoriesModule::Load(cdif::Container & ctx) {
-    std::function<std::unique_ptr<SectionHeaderFactory> (std::shared_ptr<FileReader>)> shff = 
-        [] (auto fr) { return std::make_unique<SectionHeaderFactory>(fr); };
-    ctx.RegisterFactory<
-        std::unique_ptr<SectionHeaderFactory>,
-        std::shared_ptr<FileReader>>(shff);
+    ctx.bind<ElfHeaderFactory>().build();
+    ctx.bind<SectionHeaderFactory>().build();
+    ctx.bind<ProgramHeaderFactory>().build();
 
-    std::function<std::unique_ptr<ProgramHeaderFactory> (std::shared_ptr<FileReader>)> phff =
-        [] (auto fr) { return std::make_unique<ProgramHeaderFactory>(fr); };
-    ctx.RegisterFactory<
-        std::unique_ptr<ProgramHeaderFactory>,
-        std::shared_ptr<FileReader>>(phff);
-
-    std::function<std::unique_ptr<ElfHeaderFactory> (std::shared_ptr<FileReader>)> ehff =
-        [] (auto fr) { return std::make_unique<ElfHeaderFactory>(fr); };
-    ctx.RegisterFactory<
+    ctx.bind<ElfParser,
+        std::function<std::shared_ptr<FileReader> (const std::string&)>,
         std::unique_ptr<ElfHeaderFactory>,
-        std::shared_ptr<FileReader>>(ehff);
+        std::unique_ptr<SectionHeaderFactory>,
+        std::unique_ptr<ProgramHeaderFactory>>()
+        .build();
 }

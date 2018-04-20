@@ -11,15 +11,17 @@
 
 class ProgramHeaderFactory {
     private:
-        std::shared_ptr<FileReader> m_fileReader;
-
-        std::shared_ptr<ProgramHeader> createSingle(Bitness bitness, ByteOrder endianess);
-        std::shared_ptr<ProgramHeader> deserialize32(ByteOrder endianess);
-        std::shared_ptr<ProgramHeader> deserialize64(ByteOrder endianess);
+        ProgramHeader createSingle(
+            std::shared_ptr<FileReader> fileReader,
+            Bitness bitness,
+            ByteOrder endianess);
+        ProgramHeader deserialize32(std::shared_ptr<FileReader> fileReader, ByteOrder endianess);
+        ProgramHeader deserialize64(std::shared_ptr<FileReader> fileReader, ByteOrder endianess);
 
     public:
-        ProgramHeaderFactory() = delete;
-        ProgramHeaderFactory(std::shared_ptr<FileReader> fileReader) : m_fileReader(fileReader) {};
+        ProgramHeaderFactory() = default;
 
-        Result<std::vector<std::shared_ptr<ProgramHeader>>, ParseFailure> Create(std::shared_ptr<ElfHeader> elf);
+        Result<std::vector<ProgramHeader>, ParseFailure> create(
+                std::shared_ptr<FileReader> fileReader,
+                const ElfHeader& elf);
 };

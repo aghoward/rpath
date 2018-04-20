@@ -10,15 +10,22 @@
 
 class SectionHeaderFactory {
     private:
-        std::shared_ptr<FileReader> m_fileReader;
-
-        std::shared_ptr<SectionHeader> createSingle(Bitness bitness, ByteOrder endianess);
-        std::string getName(std::shared_ptr<SectionHeader> header, uint64_t offset);
-        std::string getContents(std::shared_ptr<SectionHeader> header);
+        SectionHeader createSingle(
+                std::shared_ptr<FileReader>& fileReader,
+                Bitness bitness,
+                ByteOrder endianess);
+        std::string getName(
+                std::shared_ptr<FileReader>& fileReader,
+                const SectionHeader& header,
+                uint64_t offset);
+        std::string getContents(
+                std::shared_ptr<FileReader>& fileReader,
+                const SectionHeader& header);
 
     public:
-        SectionHeaderFactory() = delete;
-        SectionHeaderFactory(std::shared_ptr<FileReader> fileReader) : m_fileReader(fileReader) {};
+        SectionHeaderFactory() = default;
 
-        Result<std::vector<std::shared_ptr<SectionHeader>>, ParseFailure> Create(std::shared_ptr<ElfHeader> elf);
+        Result<std::vector<SectionHeader>, ParseFailure> create(
+                std::shared_ptr<FileReader> fileReader,
+                const ElfHeader& elf);
 };
