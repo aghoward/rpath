@@ -14,8 +14,8 @@ enum class Bitness : uint8_t
 enum class ByteOrder : uint8_t
 {
     Invalid = 0,
-    BigEndian = 1,
-    LittleEndian = 2,
+    LittleEndian = 1,
+    BigEndian = 2
 };
 
 enum class ObjectFileType : uint16_t

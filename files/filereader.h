@@ -53,4 +53,5 @@ class FileReader {
         std::string readString(size_t length);
         
         void seek(size_t position);
+        std::size_t tell();
 };

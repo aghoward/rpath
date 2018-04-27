@@ -11,6 +11,29 @@
 
 #include <iostream>
 
+#include "printing/customoutput.h"
+
+void printElf(const ElfHeader& elf)
+{
+    std::cout << std::hex;
+    std::cout << "Elf Header:" << std::endl;
+    std::cout << "\tBitness:\t\t" << elf.bitness << std::endl;
+    std::cout << "\tByteOrder:\t\t" << elf.byteOrder << std::endl;
+    std::cout << "\tType:\t\t\t" << elf.type << std::endl;
+    std::cout << "\tMachine:\t\t\t" << elf.machine << std::endl;
+    std::cout << "\tVersion:\t\t\t" << elf.version << std::endl;
+    std::cout << "\tEntry:\t\t\t" << elf.entry << std::endl;
+    std::cout << "\tProgram Offset:\t" << elf.program_offset << std::endl;
+    std::cout << "\tSection Offset:\t" << elf.section_offset << std::endl;
+    std::cout << "\tFlags:\t\t\t" << elf.flags << std::endl;
+    std::cout << "\tProgram Size:\t\t" << elf.program_size << std::endl;
+    std::cout << "\tProgram Entry Size:\t" << elf.program_entry_size << std::endl;
+    std::cout << "\tProgram Entry Count:\t" << elf.program_entry_count << std::endl;
+    std::cout << "\tSection Entry Size:\t" << elf.section_entry_size << std::endl;
+    std::cout << "\tSection Entry Count:\t" << elf.section_entry_count << std::endl;
+    std::cout << "\tSection Name Index:\t" << elf.section_name_index << std::endl;
+}
+
 Result<ElfHeader, ParseFailure> ElfHeaderFactory::create(std::shared_ptr<FileReader> fileReader) {
     fileReader->seek(0);
     if (!fileReader->isOk())
@@ -28,7 +51,12 @@ Result<ElfHeader, ParseFailure> ElfHeaderFactory::create(std::shared_ptr<FileRea
     setBitness(elf);
     setEndianess(elf);
 
+    fileReader->seek(elf.IDENT_CHARS);
+    
+    std::cout << "Before: " << fileReader->tell();
     elf.type = fileReader->readBytes<ObjectFileType, 2>(elf.byteOrder);
+    std::cout << "After: " << fileReader->tell();
+
     elf.machine = fileReader->readBytes<Architecture, 2>(elf.byteOrder);
     elf.version = fileReader->readBytes<FileVersion, 4>(elf.byteOrder);
     elf.entry = getWord(fileReader, elf.bitness, elf.byteOrder);
@@ -42,6 +70,7 @@ Result<ElfHeader, ParseFailure> ElfHeaderFactory::create(std::shared_ptr<FileRea
     elf.section_entry_count = fileReader->readBytes<uint16_t, 2>(elf.byteOrder);
     elf.section_name_index = fileReader->readBytes<uint16_t, 2>(elf.byteOrder);
 
+    printElf(elf);
     return elf;
 }
 

@@ -30,6 +30,7 @@ std::byte FileReader::readByte() {
 }
 
 std::vector<std::byte> FileReader::readBytes(size_t count, ByteOrder byteOrder) {
+    
     auto bytes = std::vector<std::byte>(count);
     std::for_each(bytes.begin(), bytes.end(), [&] (auto& b) { b = this->readByte(); });
     if (byteOrder == ByteOrder::LittleEndian)
@@ -57,4 +58,9 @@ std::string FileReader::readString(size_t length) {
 
 void FileReader::seek(size_t position) {
     m_fd.seekg(position);
+}
+
+std::size_t FileReader::tell()
+{
+    return m_fd.tellg();
 }
